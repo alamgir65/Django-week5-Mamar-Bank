@@ -1,6 +1,6 @@
 from django.shortcuts import render,redirect
 from .forms import UserRegistrationForm,UserUpdateForm
-from django.views.generic import FormView
+from django.views.generic import FormView,RedirectView
 from django.contrib.auth.views import LoginView,LogoutView
 from django.contrib.auth import login, logout
 from django.urls import reverse_lazy
@@ -24,11 +24,18 @@ class UserLoginView(LoginView):
     def get_success_url(self):
         return reverse_lazy('profile')
 
-class UserLogoutView(LogoutView):
-    def get_success_url(self):
-        if self.request.user.is_authenticated:
-            logout(self.request)
-        return reverse_lazy('home')
+# class UserLogoutView(LogoutView):
+#     def get_success_url(self):
+#         if self.request.user.is_authenticated:
+#             logout(self.request)
+#         return reverse_lazy('home')
+    
+class LogoutView(RedirectView):
+    url = reverse_lazy('home')  # Redirect to home page after logout
+
+    def get(self, request, *args, **kwargs):
+        logout(request)
+        return super().get(request, *args, **kwargs)
     
     
 class UserProfileUpdate(View):
